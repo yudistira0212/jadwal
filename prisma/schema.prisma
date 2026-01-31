@@ -1,0 +1,68 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  // directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Lecturer {
+  id        String     @id @default(cuid())
+  name      String
+  code      String?
+  schedules Schedule[]
+}
+
+model Subject {
+  id        String     @id @default(cuid())
+  name      String
+  code      String
+  prodi     String     @default("S1 Teknik Informatika")
+  sks       Int
+  schedules Schedule[]
+}
+
+model Room {
+  id        String     @id @default(cuid())
+  name      String
+  schedules Schedule[]
+}
+
+model StudyClass {
+  id        String     @id @default(cuid())
+  name      String
+  schedules Schedule[]
+}
+
+model Schedule {
+  id          String     @id @default(cuid())
+  subjectId   String
+  subject     Subject    @relation(fields: [subjectId], references: [id])
+  lecturerId  String
+  lecturer    Lecturer   @relation(fields: [lecturerId], references: [id])
+  roomId      String
+  room        Room       @relation(fields: [roomId], references: [id])
+  classId     String
+  studyClass  StudyClass @relation(fields: [classId], references: [id])
+  day         String
+  startTime   String
+  endTime     String
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  title     String
+  content   String?  @db.Text
+  image     String?  // Path gambar (cth: /uploads/poster-lomba.jpg)
+  createdAt DateTime @default(now())
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String   // Akan disimpan dalam bentuk Hash (terenkripsi)
+  name      String?
+  createdAt DateTime @default(now())
+}
