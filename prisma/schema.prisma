@@ -1,11 +1,10 @@
-datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  // directUrl = env("DIRECT_URL")
-}
-
 generator client {
   provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Lecturer {
@@ -37,32 +36,32 @@ model StudyClass {
 }
 
 model Schedule {
-  id          String     @id @default(cuid())
-  subjectId   String
-  subject     Subject    @relation(fields: [subjectId], references: [id])
-  lecturerId  String
-  lecturer    Lecturer   @relation(fields: [lecturerId], references: [id])
-  roomId      String
-  room        Room       @relation(fields: [roomId], references: [id])
-  classId     String
-  studyClass  StudyClass @relation(fields: [classId], references: [id])
-  day         String
-  startTime   String
-  endTime     String
+  id         String     @id @default(cuid())
+  subjectId  String
+  lecturerId String
+  roomId     String
+  classId    String
+  day        String
+  startTime  String
+  endTime    String
+  studyClass StudyClass @relation(fields: [classId], references: [id])
+  lecturer   Lecturer   @relation(fields: [lecturerId], references: [id])
+  room       Room       @relation(fields: [roomId], references: [id])
+  subject    Subject    @relation(fields: [subjectId], references: [id])
 }
 
 model Announcement {
   id        String   @id @default(cuid())
   title     String
-  content   String?  @db.Text
-  image     String?  // Path gambar (cth: /uploads/poster-lomba.jpg)
+  content   String?
+  image     String?
   createdAt DateTime @default(now())
 }
 
 model Admin {
   id        String   @id @default(cuid())
   username  String   @unique
-  password  String   // Akan disimpan dalam bentuk Hash (terenkripsi)
+  password  String
   name      String?
   createdAt DateTime @default(now())
 }

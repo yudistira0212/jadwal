@@ -63,7 +63,7 @@ export default function MonitorScreen({
     // Jalankan fetch pertama kali
     fetchData();
     // C. Logika Polling Data (Update tiap 10 detik)
-    const dataInterval = setInterval(fetchData, 10000);
+    const dataInterval = setInterval(fetchData, 60000);
     // Membersihkan interval saat komponen dilepas (Cleanup)
     return () => {
       clearInterval(timer);
@@ -76,7 +76,7 @@ export default function MonitorScreen({
     if (announcements.length > 0) {
       const slideInterval = setInterval(() => {
         setCurrentSlideIndex((prev) => (prev + 1) % announcements.length);
-      }, 5000); // Ganti gambar tiap 5 detik
+      }, 20000); // Ganti gambar tiap 5 detik
       return () => clearInterval(slideInterval);
     }
   }, [announcements]);
@@ -111,7 +111,7 @@ export default function MonitorScreen({
       s.endTime > timeString,
   );
 
-  console.log(activeSessions);
+  // console.log(activeSessions);
 
   // Ambil hanya 3-4 jadwal ke depan agar muat di kotak kecil
   const upcomingSessions = schedules
@@ -126,27 +126,29 @@ export default function MonitorScreen({
     return "grid-cols-3 grid-rows-2";
   };
 
+  
+
   if (!mounted)
     return <div className="bg-black h-screen text-white">Loading...</div>;
 
   return (
     <div className="h-screen bg-gray-900 text-white overflow-hidden flex flex-col font-sans">
       {/* HEADER */}
-      <header className="bg-gray-800 p-4 md:p-6 flex justify-between items-center shadow-lg border-b-4 border-cyan-500 z-20 relative shrink-0 h-[15vh]">
+      <header className="bg-gray-800 p-2 md:p-6 flex justify-between items-center shadow-lg border-b-4 border-cyan-500 z-20 relative shrink-0 h-[10vh]">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-cyan-400 tracking-wider">
+          <h1 className="text-md md:text-1xl font-bold text-cyan-400 tracking-wider">
             TEKNIK INFORMATIKA
           </h1>
-          <p className="text-gray-400 text-xs md:text-sm tracking-widest uppercase">
+          <p className="text-gray-400 text-xs tracking-widest uppercase">
             Jadwal Perkuliahan Real-time
           </p>
         </div>
         <div className="text-right">
-          <div className="text-4xl md:text-5xl font-mono font-bold text-white flex items-center gap-4">
-            <ClockIcon className="h-8 w-8 md:h-10 md:w-10 text-cyan-500 animate-pulse" />
+          <div className="text-2xl md:text-2xl font-mono font-bold text-white flex items-center gap-4">
+            <ClockIcon className="h-5 w-8 md:h-7 md:w-7 text-cyan-500 animate-pulse" />
             {currentTime.toLocaleTimeString("id-ID", { hour12: false })}
           </div>
-          <p className="text-cyan-400 font-bold mt-1 text-sm md:text-lg">
+          <p className="text-cyan-400 font-bold mt-1 text-sm md:text-md">
             {currentTime.toLocaleDateString("id-ID", {
               weekday: "long",
               day: "numeric",
@@ -158,7 +160,7 @@ export default function MonitorScreen({
       </header>
 
       {/* CONTENT WRAPPER */}
-      <div className="h-[85vh] flex overflow-hidden">
+      <div className="h-[90vh] flex overflow-hidden">
         {/* KOLOM KIRI: ACTIVE SESSIONS (2/3 Layar) */}
         <div className="w-2/3 p-4 h-full overflow-hidden bg-gray-900 relative border-r border-gray-700">
           {activeSessions.length === 0 ? (
@@ -172,18 +174,18 @@ export default function MonitorScreen({
             </div>
           ) : (
             <div
-              className={`grid gap-4 h-full w-full ${getGridClass(
+              className={`grid gap-2 h-full w-full ${getGridClass(
                 activeSessions.length,
               )}`}
             >
               {activeSessions.map((session) => (
                 <div
                   key={session.id}
-                  className="relative bg-linear-to-br from-blue-900 to-gray-900 rounded-2xl border-2 border-cyan-500 shadow-[0_0_30px_rgba(6,182,212,0.3)] p-4 md:p-6 flex flex-col justify-center text-center group overflow-hidden min-h-0"
+                  className="relative  bg-linear-to-br from-blue-900 to-gray-900 rounded-2xl border-2 border-cyan-500 shadow-[0_0_30px_rgba(6,182,212,0.3)] p-0 md:p-2 flex flex-col justify-center text-center group overflow-hidden min-h-0"
                 >
                   <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none z-0">
                     <span className="text-3xl md:text-9xl font-bold text-white">
-                      {session.room.name.replace(/\D/g, "")}
+                      {session.room.name.replace(/\D/g, "")} 
                     </span>
                   </div>
                   <div className="absolute bottom-2 right-4 text-right z-0 pointer-events-none">
@@ -194,53 +196,53 @@ export default function MonitorScreen({
 
                   <div className="relative z-10 flex flex-col h-full justify-between">
                     <div className="flex justify-between items-start">
-                      <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs md:text-sm font-bold animate-pulse shadow-lg">
+                      <span className="bg-red-600 text-white px-1 py-1 rounded-full text-xs md:text-sm font-bold animate-pulse shadow-lg">
                         Berlangsung
                       </span>
                       <p className="text-gray-400 text-xs md:text-sm uppercase tracking-widest">
-                        Lokasi
+                        {session.startTime} - {session.endTime}
                       </p>
                     </div>
 
                     <div className="shrink-0">
-                      <h2 className="text-2xl md:text-3xl font-bold text-white bg-clip-text bg-linear-to-r from-white to-cyan-200 leading-tight">
-                        {session.room.name}
+                      <h2 className="text-base md:text-sm font-bold text-white bg-clip-text bg-linear-to-r from-white to-cyan-200 leading-tight">
+                        {session.room.name} 
                       </h2>
                     </div>
 
                     <div className="flex-1 flex flex-col justify-center my-2">
-                      <h3 className="text-2xl md:text-2xl font-bold text-cyan-400 leading-tight drop-shadow-md line-clamp-2">
-                        {session.subject.name}
-                      </h3>
+                      <h3 className="text-2xl md:text-sm font-bold text-cyan-400 leading-tight drop-shadow-md line-clamp-2">
+                        {session.subject.name} 
+                      </h3> 
                       <div className="mt-2">
-                        <span className="text-gray-300 text-sm md:text-lg font-medium bg-gray-800/50 px-3 py-1 rounded">
-                          {session.subject.prodi}
+                        <span className="text-gray-300 text-sx md:text-lg font-medium bg-gray-800/50 px-3 py-1 rounded">
+                          {session.subject.prodi} 
                         </span>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-4 border-t border-gray-700/50 pt-4 bg-gray-900/30 rounded-xl p-2 backdrop-blur-sm mt-auto shrink-0">
-                      <div className="text-left overflow-hidden">
+                    <div className="grid grid-cols-4 gap-4 border-t border-gray-700/50 pt-4 bg-gray-900/30 rounded-xl p-2 backdrop-blur-sm mt-auto shrink-0">
+                      <div className="text-left w-full col-span-3 overflow-hidden grid">
                         <p className="text-[10px] md:text-xs text-gray-400 uppercase mb-1">
                           Dosen
                         </p>
-                        <p className="text-sm md:text-lg font-bold text-white truncate">
+                        <div className="text-xs md:text-lg font-bold text-white wrap-break-word  animate-marquee whitespace-nowrap">
                           {session.lecturer.name}
-                        </p>
+                        </div>
                       </div>
-                      <div className="text-left overflow-hidden">
+                      {/* <div className="text-left overflow-hidden">
                         <p className="text-[10px] md:text-xs text-gray-400 uppercase mb-1">
                           Waktu
                         </p>
                         <p className="text-sm md:text-lg font-bold text-white truncate">
                           {session.startTime} - {session.endTime}
                         </p>
-                      </div>
-                      <div className="text-right">
+                      </div> */}
+                      <div className="text-right  ">
                         <p className="text-[10px] md:text-xs text-gray-400 uppercase mb-1">
                           Kelas
                         </p>
-                        <span className="inline-block bg-cyan-600 text-white px-2 py-1 md:px-3 md:py-1 rounded-lg font-bold text-sm md:text-lg shadow-lg">
+                        <span className="inline-block truncate bg-cyan-600 text-white  md:px-3 md:py-1 rounded-lg font-bold text-sm md:text-sm shadow-lg">
                           {session.studyClass.name}
                         </span>
                       </div>
@@ -256,7 +258,7 @@ export default function MonitorScreen({
         <div className="w-1/3 bg-gray-800 flex flex-col z-20 shadow-2xl h-full border-l border-gray-700">
           {/* BAGIAN ATAS: JADWAL SELANJUTNYA (50% dari area konten sidebar) */}
           <div className="flex-1 flex flex-col overflow-hidden border-b border-gray-600 bg-gray-800">
-            <div className="p-3 bg-gray-900 border-b border-gray-700 flex items-center justify-between shrink-0">
+            <div className="p-1 bg-gray-900 border-b border-gray-700 flex items-center justify-between shrink-0">
               <h3 className="text-lg font-bold text-white flex items-center gap-2">
                 <span className="text-yellow-500">🔜</span> Selanjutnya
               </h3>
@@ -288,7 +290,7 @@ export default function MonitorScreen({
                       {item.subject.name}
                     </h4>
                     <div className="flex justify-between items-center text-[10px] text-gray-300">
-                      <span className="truncate w-2/3">
+                      <span className="truncate w-2/3  ">
                         {item.lecturer.name}
                       </span>
                       <span className="text-yellow-500 font-bold">
@@ -303,7 +305,7 @@ export default function MonitorScreen({
 
           {/* BAGIAN BAWAH: PENGUMUMAN (50% dari area konten sidebar) */}
           <div className="flex-1 flex flex-col overflow-hidden bg-gray-900">
-            <div className="p-3 bg-gray-900 border-b border-gray-700 border-t flex items-center justify-between shrink-0">
+            <div className="p-1 bg-gray-900 border-b border-gray-700 border-t flex items-center justify-between shrink-0">
               <h3 className="text-lg font-bold text-white flex items-center gap-2">
                 <span className="text-pink-500">📢</span> Informasi
               </h3>
@@ -321,7 +323,7 @@ export default function MonitorScreen({
                 >
                   {announcements[currentSlideIndex].image ? (
                     <>
-                      <div className="relative h-3/5 w-full bg-black">
+                      <div className="relative h-3/4 w-full bg-black">
                         <Image
                           src={announcements[currentSlideIndex].image!}
                           alt="Info"
@@ -329,24 +331,48 @@ export default function MonitorScreen({
                           className="object-contain"
                         />
                       </div>
-                      <div className="h-2/5 p-3 bg-gray-800 flex flex-col justify-center">
+                      <div className="h-1/5 px-3 bg-gray-800 flex flex-col justify-center">
                         <h4 className="text-pink-400 font-bold text-sm leading-tight line-clamp-1 mb-1">
-                          {announcements[currentSlideIndex].title}
+                          {announcements[currentSlideIndex].title} 
                         </h4>
-                        <p className="text-gray-300 text-xs line-clamp-3 leading-relaxed">
+                        {/* <p className="text-gray-300 text-xs line-clamp-3 leading-relaxed">
                           {announcements[currentSlideIndex].content}
-                        </p>
+                        </p> */}
+                      
+                      </div>
+                      <div className="bg-cyan-700 p-2 overflow-hidden whitespace-nowrap shrink-0 h-10 flex items-center z-30">
+                        <div className="animate-marquee text-white font-bold text-sm inline-block">
+                          {announcements[currentSlideIndex].content} 
+                        </div>
                       </div>
                     </>
-                  ) : (
-                    <div className="h-full w-full p-4 flex flex-col justify-center text-center bg-gray-800">
+                  ) : (<>
+                  <div className="relative h-3/4 w-full bg-black">
+                     <div className="relative h-3/4 w-full bg-black">
+                        {/* <Image
+                          src={announcements[currentSlideIndex].image!}
+                          alt="Info"
+                          fill
+                          className="object-contain"
+                        /> */}
+                      </div>
+                  </div>
+                  <div className="h-full w-full p-4 flex flex-col justify-center text-center bg-gray-800">
                       <h4 className="text-pink-400 font-bold text-lg mb-2 border-b border-gray-700 pb-2">
                         {announcements[currentSlideIndex].title}
                       </h4>
-                      <p className="text-white text-sm whitespace-pre-wrap leading-relaxed line-clamp-6">
+                      {/* <p className="text-white text-sm whitespace-pre-wrap leading-relaxed line-clamp-6">
                         {announcements[currentSlideIndex].content}
-                      </p>
+                      </p> */}
+                      
                     </div>
+                     <div className="bg-cyan-700 p-2  overflow-hidden whitespace-nowrap shrink-0 h-10 flex items-center z-30">
+                        <div className="animate-marquee text-white font-bold text-sm inline-block">
+                          {announcements[currentSlideIndex].content} 
+                        </div>
+                      </div>
+                  </>
+                    
                   )}
                 </div>
               )}
@@ -354,12 +380,6 @@ export default function MonitorScreen({
           </div>
 
           {/* FOOTER: MARQUEE (Tetap di paling bawah) */}
-          <div className="bg-cyan-700 p-2 overflow-hidden whitespace-nowrap shrink-0 h-10 flex items-center z-30">
-            <div className="animate-marquee text-white font-bold text-sm inline-block">
-              SELAMAT DATANG DI PRODI TEKNIK INFORMATIKA & TEKNIK KOMPUTER •
-              JANGAN LUPA PRESENSI • TERIMA KASIH
-            </div>
-          </div>
         </div>
       </div>
 

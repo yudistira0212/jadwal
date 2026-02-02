@@ -4,37 +4,31 @@ import { deleteSchedule } from "@/app/actions/manage-data";
 import DeleteButton from "../../components/DeleteButton";
 import Link from "next/link";
 import CreateScheduleButton from "../../components/admin/CreateScheduleButton";
-import Search from "../../components/Search"; // Import komponen Search baru
+import Search from "../../components/Search"; 
 import { PencilSquareIcon } from "@heroicons/react/16/solid";
 
-// 1. Terima props searchParams
-export default async function SchedulesPage({
-  searchParams,
-}: {
-  searchParams?: {
-    query?: string;
-  };
-}) {
-  const query = searchParams?.query || ""; // Ambil text pencarian
+// 1. Definisikan tipe Props agar mendukung Promise (Wajib di Next.js 15)
+type Props = {
+  searchParams: Promise<{ query?: string }>;
+};
+
+export default async function SchedulesPage(props: Props) {
+  // 2. Await searchParams untuk mengambil datanya secara asinkron
+  const searchParams = await props.searchParams;
+  const query = searchParams.query || ""; // Ambil text pencarian
 
   // Ambil semua data pendukung
   const { lecturers, subjects, rooms, classes } = await getMasterData();
 
-  // 2. Update Query Prisma dengan Filter
+  // 3. Query Prisma dengan Filter
   const schedules = await prisma.schedule.findMany({
     where: {
       OR: [
-        // Cari berdasarkan Nama Mata Kuliah
         { subject: { name: { contains: query, mode: "insensitive" } } },
-        // Cari berdasarkan Nama Dosen
         { lecturer: { name: { contains: query, mode: "insensitive" } } },
-        // Cari berdasarkan Nama Ruangan
         { room: { name: { contains: query, mode: "insensitive" } } },
-        // Cari berdasarkan Nama Kelas
         { studyClass: { name: { contains: query, mode: "insensitive" } } },
-        // Cari berdasarkan Kode Mata Kuliah
         { subject: { code: { contains: query, mode: "insensitive" } } },
-        // cari berdasarkan hari
         { day: { contains: query, mode: "insensitive" } },
       ],
     },
@@ -48,7 +42,6 @@ export default async function SchedulesPage({
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-800">Kelola Jadwal</h1>
 
-          {/* Pass data ke tombol popup */}
           <CreateScheduleButton
             lecturers={lecturers}
             subjects={subjects}
@@ -57,7 +50,6 @@ export default async function SchedulesPage({
           />
         </div>
 
-        {/* 3. Pasang Komponen Search disini */}
         <div className="w-full md:w-1/2">
           <Search placeholder="Cari MK, Dosen, atau Ruangan..." />
         </div>
