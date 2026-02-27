@@ -120,10 +120,10 @@
 //     .slice(0, 4);
 
 //   const getGridClass = (count: number) => {
-//     if (count <= 1) return "grid-cols-1 grid-rows-2 content-stretch";
-//     if (count === 2) return "grid-cols-2 grid-rows-2 content-stretch";
-//     if (count >= 3 && count <= 4) return "grid-cols-2 grid-rows-2 content-stretch";
-//     return "grid-cols-3 grid-rows-2 content-stretch";
+//     if (count <= 1) return "grid-cols-1 grid-rows-2";
+//     if (count === 2) return "grid-cols-2 grid-rows-2";
+//     if (count >= 3 && count <= 4) return "grid-cols-2 grid-rows-2";
+//     return "grid-cols-3 grid-rows-2";
 //   };
 
   
@@ -604,78 +604,87 @@ export default function MonitorScreen({
               </h2>
             </div>
           ) : (
-            // PERBAIKAN: items-start memastikan kartu diletakkan di atas dan tidak ditarik memanjang
-            <div className={`grid gap-4 md:gap-6 w-full items-start content-start ${getGridClass(activeSessions.length)}`}>
-              {activeSessions.map((session) => (
-                <div
-                  key={session.id}
-                  // PERBAIKAN: h-fit membuat kartu ukurannya pas dengan isi, tidak bisa molor ke bawah
-                  className="relative bg-gradient-to-br from-blue-900 to-gray-900 rounded-2xl md:rounded-3xl border-2 border-cyan-500 shadow-xl p-4 md:p-5 flex flex-col overflow-hidden h-fit"
-                >
-                  <div className="absolute top-0 right-4 opacity-[0.08] pointer-events-none z-0 select-none">
-                    <span className="text-6xl md:text-8xl font-black text-white leading-none">
-                      {session.room.name.replace(/\D/g, "")} 
-                    </span>
-                  </div>
-                  
-                  <div className="relative z-10 flex flex-col gap-3">
-                    {/* Header Card (Status & Waktu) */}
-                    <div className="flex justify-between items-start shrink-0 gap-2">
-                      {/* PERBAIKAN: shrink-0 dan whitespace-nowrap agar badge tidak gepeng/patah */}
-                      <span className="bg-red-600 text-white px-3 py-1 md:px-4 md:py-1.5 rounded-full text-[10px] md:text-xs font-black animate-pulse shadow-lg tracking-wider uppercase whitespace-nowrap shrink-0">
-                        Berlangsung
-                      </span>
-                      {/* PERBAIKAN: Ini memastikan jam tidak terbelah jadi 3 baris */}
-                      <span className="text-gray-300 text-xs md:text-sm xl:text-base font-mono font-bold bg-black/40 px-2 py-1 md:px-3 md:py-1.5 rounded-lg whitespace-nowrap shrink-0">
-                        {session.startTime} - {session.endTime}
+            <div className={`w-full ${
+              activeSessions.length === 1 
+              ? "flex flex-col items-center justify-center h-full" 
+              : "grid gap-4 md:gap-6 items-start content-start " + getGridClass(activeSessions.length)
+            }`}>
+              {activeSessions.map((session) => {
+                const isSingle = activeSessions.length === 1;
+
+                return (
+                  <div
+                    key={session.id}
+                    // PERBAIKAN BENTUK KOTAK: Menggunakan aspect-square jika isSingle, serta membatasi max-width agar tidak kebesaran.
+                    className={`relative bg-gradient-to-br from-blue-900 to-gray-900 rounded-2xl md:rounded-3xl border-2 border-cyan-500 shadow-xl p-4 md:p-6 flex flex-col overflow-hidden ${
+                      isSingle 
+                        ? "aspect-square w-full max-w-[340px] md:max-w-[420px] xl:max-w-[480px] justify-between" 
+                        : "w-full h-fit"
+                    }`}
+                  >
+                    <div className="absolute top-0 right-4 opacity-[0.08] pointer-events-none z-0 select-none">
+                      <span className="text-6xl md:text-8xl font-black text-white leading-none">
+                        {session.room.name.replace(/\D/g, "")} 
                       </span>
                     </div>
-
-                    {/* Area Mata Kuliah */}
-                    <div className="flex-1 flex flex-col justify-center py-2">
-                      <h2 className="text-xs md:text-sm xl:text-base font-bold text-cyan-300 mb-1 line-clamp-1">
-                        {session.room.name} 
-                      </h2>
-                      <h3 className="text-lg md:text-2xl xl:text-3xl font-black text-white leading-tight drop-shadow-md line-clamp-2">
-                        {session.subject.name} 
-                      </h3> 
-                      <div className="mt-2">
-                        <span className="text-[10px] md:text-xs xl:text-sm font-medium bg-gray-800/80 px-2 md:px-3 py-1 rounded-md text-gray-300 inline-block border border-gray-600 whitespace-nowrap">
-                          {session.subject.prodi} 
+                    
+                    <div className="relative z-10 flex flex-col h-full gap-3">
+                      
+                      {/* Header Card (Status & Waktu) */}
+                      <div className={`flex items-start shrink-0 gap-2 ${isSingle ? "justify-center mb-2" : "justify-between"}`}>
+                        <span className="bg-red-600 text-white px-3 py-1 md:px-4 md:py-1.5 rounded-full text-[10px] md:text-xs font-black animate-pulse shadow-lg tracking-wider uppercase whitespace-nowrap shrink-0">
+                          Berlangsung
+                        </span>
+                        <span className="text-gray-300 text-xs md:text-sm xl:text-base font-mono font-bold bg-black/40 px-2 py-1 md:px-3 md:py-1.5 rounded-lg whitespace-nowrap shrink-0">
+                          {session.startTime} - {session.endTime}
                         </span>
                       </div>
-                    </div>
 
-                    {/* Footer Kartu (Dosen & Kelas) */}
-                    <div className="flex justify-between items-end border-t border-gray-600/50 pt-3 shrink-0 gap-3">
-                      
-                      {/* Area Dosen */}
-                      <div className="flex flex-col flex-1 min-w-0">
-                        {/* PERBAIKAN: whitespace-nowrap agar tulisan "DOSEN PENGAMPU" tidak turun ke bawah */}
-                        <span className="text-[9px] md:text-[10px] xl:text-xs text-cyan-400 font-bold uppercase mb-1 tracking-wider whitespace-nowrap shrink-0">
-                          Dosen Pengampu
-                        </span>
-                        <div className="text-xs md:text-sm xl:text-base font-bold text-white overflow-hidden whitespace-nowrap w-full">
-                          <div className="animate-marquee inline-block">
-                             {session.lecturer.name}
-                          </div>
+                      {/* Area Mata Kuliah */}
+                      <div className={`flex-1 flex flex-col justify-center py-2 ${isSingle ? "items-center text-center" : ""}`}>
+                        <h2 className="text-xs md:text-sm xl:text-base font-bold text-cyan-300 mb-2 line-clamp-1">
+                          {session.room.name} 
+                        </h2>
+                        <h3 className="text-lg md:text-2xl xl:text-3xl font-black text-white leading-tight drop-shadow-md line-clamp-3">
+                          {session.subject.name} 
+                        </h3> 
+                        <div className="mt-4">
+                          <span className="text-[10px] md:text-xs xl:text-sm font-medium bg-gray-800/80 px-3 py-1.5 rounded-md text-gray-300 inline-block border border-gray-600 whitespace-nowrap">
+                            {session.subject.prodi} 
+                          </span>
                         </div>
                       </div>
 
-                      {/* Area Kelas */}
-                      <div className="flex flex-col items-end shrink-0">
-                        <span className="text-[9px] md:text-[10px] xl:text-xs text-cyan-400 font-bold uppercase mb-1 tracking-wider whitespace-nowrap shrink-0">
-                          Kelas
-                        </span>
-                        <span className="bg-cyan-600 text-white px-3 py-1 rounded-lg font-black text-xs md:text-sm xl:text-base whitespace-nowrap shrink-0 shadow-md">
-                          {session.studyClass.name}
-                        </span>
-                      </div>
+                      {/* Footer Kartu (Dosen & Kelas) */}
+                      <div className={`flex items-end border-t border-gray-600/50 pt-4 shrink-0 gap-3 ${isSingle ? "justify-center gap-8 md:gap-12 w-full" : "justify-between"}`}>
+                        
+                        {/* Area Dosen */}
+                        <div className={`flex flex-col ${isSingle ? "items-center max-w-[65%]" : "flex-1 min-w-0"}`}>
+                          <span className="text-[9px] md:text-[10px] xl:text-xs text-cyan-400 font-bold uppercase mb-1 tracking-wider whitespace-nowrap shrink-0">
+                            Dosen Pengampu
+                          </span>
+                          <div className={`text-xs md:text-sm xl:text-base font-bold text-white overflow-hidden whitespace-nowrap w-full ${isSingle ? "text-center" : ""}`}>
+                            <div className="animate-marquee inline-block">
+                               {session.lecturer.name}
+                            </div>
+                          </div>
+                        </div>
 
+                        {/* Area Kelas */}
+                        <div className={`flex flex-col shrink-0 ${isSingle ? "items-center" : "items-end"}`}>
+                          <span className="text-[9px] md:text-[10px] xl:text-xs text-cyan-400 font-bold uppercase mb-1 tracking-wider whitespace-nowrap shrink-0">
+                            Kelas
+                          </span>
+                          <span className="bg-cyan-600 text-white px-3 py-1 rounded-lg font-black text-xs md:text-sm xl:text-base whitespace-nowrap shrink-0 shadow-md">
+                            {session.studyClass.name}
+                          </span>
+                        </div>
+
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
