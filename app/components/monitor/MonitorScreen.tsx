@@ -258,7 +258,7 @@ export default function MonitorScreen({
         <div className="w-1/3 bg-gray-800 flex flex-col z-20 shadow-2xl h-full border-l border-gray-700">
           {/* BAGIAN ATAS: JADWAL SELANJUTNYA (50% dari area konten sidebar) */}
           <div className="flex-1 flex flex-col overflow-hidden border-b border-gray-600 bg-gray-800">
-            <div className="p-1 bg-gray-900 border-b border-gray-700 flex items-center justify-between shrink-0">
+            <div className="p-0 bg-gray-900 border-b border-gray-700 flex items-center justify-between shrink-0">
               <h3 className="text-lg font-bold text-white flex items-center gap-2">
                 <span className="text-yellow-500">🔜</span> Selanjutnya
               </h3>
