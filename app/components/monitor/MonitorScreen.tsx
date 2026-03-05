@@ -76,7 +76,7 @@ export default function MonitorScreen({
     if (announcements.length > 0) {
       const slideInterval = setInterval(() => {
         setCurrentSlideIndex((prev) => (prev + 1) % announcements.length);
-      }, 20000); // Ganti gambar tiap 5 detik
+      }, 20000); // Ganti gambar tiap 20 detik
       return () => clearInterval(slideInterval);
     }
   }, [announcements]);
@@ -111,8 +111,6 @@ export default function MonitorScreen({
       s.endTime > timeString,
   );
 
-  // console.log(activeSessions);
-
   // Ambil hanya 3-4 jadwal ke depan agar muat di kotak kecil
   const upcomingSessions = schedules
     .filter((s) => s.day === currentDayName && s.startTime > timeString)
@@ -125,8 +123,6 @@ export default function MonitorScreen({
     if (count >= 3 && count <= 4) return "grid-cols-2 grid-rows-2";
     return "grid-cols-3 grid-rows-2";
   };
-
-  
 
   if (!mounted)
     return <div className="bg-black h-screen text-white">Loading...</div>;
@@ -181,7 +177,7 @@ export default function MonitorScreen({
               {activeSessions.map((session) => (
                 <div
                   key={session.id}
-                  className="relative  bg-linear-to-br from-blue-900 to-gray-900 rounded-2xl border-2 border-cyan-500 shadow-[0_0_30px_rgba(6,182,212,0.3)] p-0 md:p-2 flex flex-col justify-center text-center group overflow-hidden min-h-0"
+                  className="relative bg-linear-to-br from-blue-900 to-gray-900 rounded-2xl border-2 border-cyan-500 shadow-[0_0_30px_rgba(6,182,212,0.3)] p-0 md:p-2 flex flex-col justify-center text-center group overflow-hidden min-h-0"
                 >
                   <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none z-0">
                     <span className="text-3xl md:text-9xl font-bold text-white">
@@ -226,23 +222,15 @@ export default function MonitorScreen({
                         <p className="text-[10px] md:text-xs text-gray-400 uppercase mb-1">
                           Dosen
                         </p>
-                        <div className="text-xs md:text-lg font-bold text-white wrap-break-word  animate-marquee whitespace-nowrap">
+                        <div className="text-xs md:text-lg font-bold text-white wrap-break-word animate-marquee whitespace-nowrap">
                           {session.lecturer.name}
                         </div>
                       </div>
-                      {/* <div className="text-left overflow-hidden">
-                        <p className="text-[10px] md:text-xs text-gray-400 uppercase mb-1">
-                          Waktu
-                        </p>
-                        <p className="text-sm md:text-lg font-bold text-white truncate">
-                          {session.startTime} - {session.endTime}
-                        </p>
-                      </div> */}
-                      <div className="text-right  ">
+                      <div className="text-right">
                         <p className="text-[10px] md:text-xs text-gray-400 uppercase mb-1">
                           Kelas
                         </p>
-                        <span className="inline-block truncate bg-cyan-600 text-white  md:px-3 md:py-1 rounded-lg font-bold text-sm md:text-sm shadow-lg">
+                        <span className="inline-block truncate bg-cyan-600 text-white md:px-3 md:py-1 rounded-lg font-bold text-sm md:text-sm shadow-lg">
                           {session.studyClass.name}
                         </span>
                       </div>
@@ -272,7 +260,6 @@ export default function MonitorScreen({
                   </p>
                 </div>
               ) : (
-                // Menggunakan slice di atas agar tidak perlu scroll
                 upcomingSessions.map((item, idx) => (
                   <div
                     key={idx}
@@ -290,7 +277,7 @@ export default function MonitorScreen({
                       {item.subject.name}
                     </h4>
                     <div className="flex justify-between items-center text-[10px] text-gray-300">
-                      <span className="truncate w-2/3  ">
+                      <span className="truncate w-2/3">
                         {item.lecturer.name}
                       </span>
                       <span className="text-yellow-500 font-bold">
@@ -335,51 +322,37 @@ export default function MonitorScreen({
                         <h4 className="text-pink-400 font-bold text-sm leading-tight line-clamp-1 mb-1">
                           {announcements[currentSlideIndex].title} 
                         </h4>
-                        {/* <p className="text-gray-300 text-xs line-clamp-3 leading-relaxed">
-                          {announcements[currentSlideIndex].content}
-                        </p> */}
-                      
                       </div>
-                      <div className="bg-cyan-700 p-2 overflow-hidden whitespace-nowrap shrink-0 h-10 flex items-center z-30">
-                        <div className="animate-marquee text-white font-bold text-sm inline-block">
+                      {/* PENGUMUMAN DENGAN GAMBAR (MARQUEE MULUS) */}
+                      <div className="bg-cyan-700 py-2 overflow-hidden whitespace-nowrap shrink-0 h-10 flex items-center z-30 marquee-container w-full">
+                        <div className="animate-marquee-announcement text-white font-bold text-sm">
                           {announcements[currentSlideIndex].content} 
                         </div>
                       </div>
                     </>
-                  ) : (<>
-                  <div className="relative h-3/4 w-full bg-black">
-                     <div className="relative h-3/4 w-full bg-black">
-                        {/* <Image
-                          src={announcements[currentSlideIndex].image!}
-                          alt="Info"
-                          fill
-                          className="object-contain"
-                        /> */}
+                  ) : (
+                    <>
+                      <div className="relative h-3/4 w-full bg-black">
+                         <div className="relative h-3/4 w-full bg-black">
+                          </div>
                       </div>
-                  </div>
-                  <div className="h-full w-full p-4 flex flex-col justify-center text-center bg-gray-800">
-                      <h4 className="text-pink-400 font-bold text-lg mb-2 border-b border-gray-700 pb-2">
-                        {announcements[currentSlideIndex].title}
-                      </h4>
-                      {/* <p className="text-white text-sm whitespace-pre-wrap leading-relaxed line-clamp-6">
-                        {announcements[currentSlideIndex].content}
-                      </p> */}
-                      
-                    </div>
-                     <div className="bg-cyan-700 p-2  overflow-hidden whitespace-nowrap shrink-0 h-10 flex items-center z-30">
-                        <div className="animate-marquee text-white font-bold text-sm inline-block">
+                      <div className="h-full w-full p-4 flex flex-col justify-center text-center bg-gray-800">
+                          <h4 className="text-pink-400 font-bold text-lg mb-2 border-b border-gray-700 pb-2">
+                            {announcements[currentSlideIndex].title}
+                          </h4>
+                      </div>
+                      {/* PENGUMUMAN TANPA GAMBAR (MARQUEE MULUS) */}
+                      <div className="bg-cyan-700 py-2 overflow-hidden whitespace-nowrap shrink-0 h-10 flex items-center z-30 marquee-container w-full">
+                        <div className="animate-marquee-announcement text-white font-bold text-sm">
                           {announcements[currentSlideIndex].content} 
                         </div>
                       </div>
-                  </>
-                    
+                    </>
                   )}
                 </div>
               )}
             </div>
           </div>
-
-          {/* FOOTER: MARQUEE (Tetap di paling bawah) */}
         </div>
       </div>
 
@@ -395,6 +368,7 @@ export default function MonitorScreen({
       </button>
 
       <style jsx>{`
+        /* Animasi lama (tetap dibiarkan untuk nama Dosen di kartu kiri) */
         @keyframes marquee {
           0% {
             transform: translateX(100%);
@@ -405,6 +379,27 @@ export default function MonitorScreen({
         }
         .animate-marquee {
           animation: marquee 20s linear infinite;
+        }
+
+        /* Animasi BARU KHUSUS untuk Pengumuman */
+        @keyframes marquee-announcement {
+          0% {
+            transform: translate(0, 0);
+          }
+          100% {
+            transform: translate(-100%, 0);
+          }
+        }
+        
+        .marquee-container {
+          width: 100%;
+        }
+
+        .animate-marquee-announcement {
+          display: inline-block;
+          padding-left: 100%;
+          animation: marquee-announcement 35s linear infinite;
+          will-change: transform;
         }
       `}</style>
     </div>
